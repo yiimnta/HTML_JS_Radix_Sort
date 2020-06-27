@@ -1,199 +1,189 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        
-        <style>
-            body {
-                background: #d7c6f6;
-            }
-
-            label {
-                font-weight: bold;
-            }
-
-            #myTable{
-                background-color: aliceblue;
-                border: 3px solid #6634c1;
-                margin-top:20px;
-                padding: 10px;
-            }
-
-            #myResult{
-                background-color: #fcfffc;
-                border: 3px solid #11a9b1;
-                margin-top: 20px;
-                padding: 10px;
-            }
-
-            .hidden {
-                display: none;
-            }
-
-            .col {
-                border:1px solid #000;
-                padding:5px;
-                min-width: 37px;
-                text-align: center;
-            }
-
-            .container {
-                margin: auto;
-                width: 800px;
-                position: relative;
-                top:50px;
-            }
-
-            input {
-                text-align: center;
-            }
-
-            .bucket{
-                width: 97%;
-                background-color: antiquewhite;
-                border:2px solid #ff9d0b;
-                margin: 15px 0px;
-                padding: 7px;
-                border-radius: 5px;
-                min-height: 80px;
-            }
-
-            .bucket td {
-                border:1px solid #000;
-                padding:5px;
-                min-width: 37px;
-                text-align: center;
-                background: azure;
-            }
-
-            .bucket label {
-                padding:5px;
-            }
-
-            .bucket table {
-                margin:5px 0px;
-            }
-
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <label>Enter n (max:105): </label>
+<head>
+	<link href="./css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container">
+        <div class="input-data">
+            <label>Number of elements: </label>
             <input type="number" id="amount" style="padding:3px 6px;border-radius: 3px;width:50px;margin-right:20px;" />
-            <label>Max (limit 0 -999999999):</label>
+            <label>Range Random from 0 to </label>
             <input type="number" id="maxNumber" value="9999" style="padding:3px 6px;border-radius: 3px;width:80px;" />
-            <button id="btnExecute">Execute</button>
-            <table id="myTable" class="hidden"></table>
-            <table id="myResult" class="hidden"></table>
-            <div id="bucket">
-            </div>
+			<button id="btnExecute">Run</button>
+			<button id="btnReset">Reset</button>
+			<br/>
+			<div class="option">
+				<fieldset>
+					<legend>Settings:</legend>
+					<input type="radio" name="typeRun" id="nonAutoExecute" checked/><span>Step by Step</span>
+					<br/>
+					<input type="radio" name="typeRun" id="autoExecute"/><span>Auto run</span>
+					<br/>
+					<div id="showRangeBar" class="hidden">
+						Speed <input type="range" id="rangeBarAutoExecute" value="1000" min="0" max="2000"/>
+						<input type="number" id="rangeValueAutoExecute" value="1000" style="padding:3px 6px;border-radius: 3px;width:80px;" />
+						ms<input type="checkbox" id="autoStep" style="margin-left:50px;"/> Pause by step
+					</div>
+				</fieldset>
+			</div>
+		</div>
+		
+        <table id="myTable" class="hidden"></table>
+        <table id="myResult" class="hidden"></table>
+        <div id="bucket">
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
-<script>
-
-
-    //Radix sort
+<script <!-- thuật toán Radix sort -->
     var step = 0;
-    function radixSort(){
 
-        if (amount.value == "" || max.value == ""){
+    function radixSort() {
+
+        if (amount.value == "" || max.value == "") {
             return;
         }
-
-        if (step >= maxStep){
-            alert("The Algorithmus was completed!");
-            return;
+        
+		if (step >= maxStep) {
+            alert("Algorithm is completed!");
+            return; 
         }
-
+		
         let numBucket = document.querySelectorAll('.bucket').length;
         document.getElementById("bucket").innerHTML = "";
-        initBucket();
-        
-        result.forEach((e, index) => {
-            let nu = parseInt((e / (10**step)) % 10);
-            let bu_tr = document.querySelectorAll("#bucket_"+nu+" tr");
-            let bu_td = document.querySelectorAll("#bucket_"+nu+" tr td");
-            let html = "";
+        initBucket();   
 
-            if(bu_td.length % 15 == 0){
-                html = "<tr>";
-            } else {
-                if (bu_tr.length > 0){
-                    let td = document.createElement('td');
-                    td.innerHTML = e;
-                    let bu_tr_td = bu_tr[bu_tr.length - 1].appendChild(td);
-                    return;
-                }
-            }
-
-            html+='<td>'+e+'</td></tr>';
-            document.querySelector("#bucket_"+nu+" tbody").innerHTML +=html;
-        });
-
-        updateResult();
-        step++;
+		if(nonAutoExecute.checked) {
+			result.forEach((e, index) => {
+				let nu = parseInt((e / (10 ** step)) % 10);
+				let bu_tr = document.querySelectorAll("#bucket_" + nu + " tr");
+				let bu_td = document.querySelectorAll("#bucket_" + nu + " tr td");
+				let html = "";
+				if (bu_td.length % 15 == 0) {
+					html = "<tr>";
+				} else {
+					if (bu_tr.length > 0) {
+						let td = document.createElement('td');
+						td.innerHTML = e;
+						let bu_tr_td = bu_tr[bu_tr.length - 1].appendChild(td);
+						return;
+					}
+				}
+				html += '<td>' + e + '</td></tr>';
+				document.querySelector("#bucket_" + nu + " tbody").innerHTML += html;
+			});
+			updateResult();
+			step++;
+		} else {
+			
+			calculate();
+		} 
     }
 
-    function updateResult(){
+	function sleep(time){
+		return new Promise((resolve) => setTimeout(resolve, time));
+	}
+	
+	async function calculate(){
+	
+		for(let i = 0; i < result.length; i++){
+			
+			await sleep(rangeBar.value).then(function(){
+				console.log("i: "+ i +"/n length:"+ result.length);
+				let e = result[i];
+				let nu = parseInt((e / (10 ** step)) % 10);
+				let bu_tr = document.querySelectorAll("#bucket_" + nu + " tr");
+				let bu_td = document.querySelectorAll("#bucket_" + nu + " tr td");
+				let html = "";
+				if (bu_td.length % 15 == 0) {
+					html = "<tr>";
+				} else {
+					if (bu_tr.length > 0) {
+						let td = document.createElement('td');
+						td.innerHTML = e;
+						let bu_tr_td = bu_tr[bu_tr.length - 1].appendChild(td);
+						return;
+					}
+				}
+				html += '<td>' + e + '</td></tr>';
+				document.querySelector("#bucket_" + nu + " tbody").innerHTML += html;
+			});
+		}
+		
+		updateResult();
+		step++;
+		
+		if(document.getElementById("autoStep").checked){
+			if(step <= maxStep){
+				await sleep(rangeBar.value).then(() => radixSort());
+			}
+		}
+	}
+	
+    function updateResult() {
+
         let td = document.querySelectorAll(".bucket tr td");
         let result_temp = [];
-        if(td.length == 0) {
+        if (td.length == 0) {
             myResult.className = "hidden";
             return;
         }
         myResult.className = "";
         myResult.innerHTML = "";
-
-        let html  = "<tr>";
+        let html = "<tr>";
         td.forEach((e, index) => {
             let nu = parseInt(e.innerHTML);
             result_temp.push(nu);
-
-            if (index % numberEachRow == 0){
+            if (index % numberEachRow == 0) {
                 html += "</tr><tr>";
             }
-            html+='<td class="col">'+nu+'</td>';
+            html += '<td class="col">' + nu + '</td>';
         });
-        html+= "</tr>";
-
+        html += "</tr>";
         myResult.innerHTML = html;
         result = result_temp;
     }
-
     //Initial
     var result = [];
     var minNumber = 0;
     var maxNumber = 9999;
     var numberEachRow = 15;
     var maxStep = 1;
-
     var max = document.getElementById("maxNumber");
     var amount = document.getElementById("amount");
     var myTable = document.getElementById("myTable");
     var myResult = document.getElementById("myResult");
     var bucket = document.getElementById("bucket");
-    var btnExecute = document.getElementById("btnExecute");
-
+    var nonAutoExecute = document.getElementById("nonAutoExecute");
+	var autoExecute = document.getElementById("autoExecute");
+	var rangeBar = document.getElementById("rangeBarAutoExecute");
+	
     amount.addEventListener("change", onChange);
     max.addEventListener("change", onChangeMax);
     btnExecute.addEventListener("click", radixSort)
-    amount.focus();
+    nonAutoExecute.addEventListener("change", setOption);
+	autoExecute.addEventListener("change", setOption);
+	rangeBar.addEventListener("input", setRangeBar);
+	
+	
+	amount.focus();
 
-    function initBucket(){
+    function initBucket() {
         var numBucket = 10;
         let html = "";
-        for(var i = 0; i < numBucket; i++){
-            html += '<div class="bucket">'
-                    +'<label>Bucket '+i+'</label>'
-                    +'<table id="bucket_'+i+'"><tbody></tbody></table>'
-                 +'</div>';
+        for (let i = 0; i < numBucket; i++) {
+            html += '<div class="bucket">' +
+                '<label>Bucket ' + i + '</label>' +
+                '<table id="bucket_' + i + '"><tbody></tbody></table>' +
+                '</div>';
         }
-
         bucket.innerHTML = html;
     }
 
-    function onChange(e){
-        if(this.value == ""){
+    function onChange(e) {
+        if (this.value == "") {
             myTable.className = "hidden";
             e.preventDefault();
         } else {
@@ -203,59 +193,69 @@
             myResult.innerHTML = "";
             myResult.className = "hidden";
             bucket.innerHTML = "";
-            var val = parseInt(this.value);
-            if (val <= 0){
+            let val = parseInt(this.value);
+            if (val <= 0) {
                 return;
             }
-
-            if(val > 105){
+            if (val > 105) {
                 val = 105;
                 this.value = 105;
             }
-
             myTable.className = "";
             myTable.innerHTML = "";
-            var row = document.createElement("tr");
+            let row = document.createElement("tr");
             let max = 0;
-
-            for(var i = 0; i < val ; i++){
-
-                if (i % numberEachRow == 0){
+            for (let i = 0; i < val; i++) {  
+                if (i % numberEachRow == 0) {
                     myTable.append(row);
                     row = document.createElement("tr");
                 }
                 const td = document.createElement("td");
-                td.className="col";
-                let nu_rd = parseInt((Math.random()* maxNumber + minNumber));
-                
-                if(nu_rd > max) {
+                td.className = "col";
+                let nu_rd = parseInt((Math.random() * maxNumber + minNumber));
+                if (nu_rd > max) {
                     max = nu_rd;
                 }
-
                 td.innerHTML = nu_rd;
                 result.push(nu_rd);
-                row.append(td); 
+                row.append(td);
             }
-
             myTable.append(row);
             maxStep = ("" + max).length;
         }
     }
 
-    function onChangeMax(e){
-        if(this.value == ""){
+    function onChangeMax(e) {
+        if (this.value == "") {
             e.preventDefault();
         } else {
-
             maxNumber = parseInt(this.value);
-            if (maxNumber <= 0){
+            if (maxNumber <= 0) {
                 maxNumber = 9999;
-            } else if (maxNumber > 999999999){
+            } else if (maxNumber > 999999999) {
                 maxNumber = 999999999;
             }
-
             this.value = maxNumber;
             amount.dispatchEvent(new Event('change'));
         }
     }
+	
+	function setOption(e){
+
+		let showRangeBar = document.getElementById("showRangeBar");
+
+		if(!this.checked){
+			return;
+		}
+		
+		if(this.id == "nonAutoExecute"){
+			showRangeBar.className = "hidden";
+		} else {
+			showRangeBar.className = "";
+		}
+	}
+	
+	function setRangeBar(e){
+		document.getElementById("rangeValueAutoExecute").value = this.value;
+	}
 </script>

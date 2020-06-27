@@ -1,0 +1,94 @@
+body {
+	background: #cdf3e3;
+	font-family: sans-serif;
+}
+
+label {
+	font-weight: bold;
+}
+
+#myTable {
+	background-color: aliceblue;
+	border: 3px solid #6634c1;
+	margin-top: 20px;
+	padding: 10px;
+	margin: 10px auto;
+}
+
+#myResult {
+	background-color: #fcfffc;
+	margin-top: 20px;
+	border: 3px solid #11a9b1;
+	padding: 10px;
+	margin: 10px auto;
+}
+
+.hidden {
+	display: none;
+}
+
+.col {
+	border: 1px solid #000;
+	padding: 5px;
+	min-width: 37px;
+	text-align: center;
+}
+
+.container {
+	margin: auto;
+	width: 900px;
+	position: relative;
+	top: 50px;
+}
+
+input {
+	text-align: center;
+}
+
+#bucket {
+	width: max-content;
+	margin: 0 auto;
+}
+
+.bucket {
+	width: max-content;
+	background-color: antiquewhite;
+	border: 2px solid #ff9d0b;
+	margin: 15px 5px;
+	padding: 10px;
+	border-radius: 5px;
+	min-height: 80px;
+	float: left;
+	min-height: 450px;
+}
+
+.bucket td {
+	border: 1px solid #000;
+	padding: 5px;
+	min-width: 37px;
+	text-align: center;
+	background: azure;
+	display: block;
+	margin: 5px;
+
+.bucket label {
+	font-size: 15px;
+	padding: 5px;
+}
+
+.bucket table {
+	margin: 5px auto;
+}
+
+.input-data {
+	width: max-content;
+	margin: 0 auto;
+}
+
+.option{
+	margin:10px 0px;
+}
+
+.hidden{
+	display:none;
+}
